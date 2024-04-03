@@ -29,10 +29,10 @@ void setup() {
   }
   dc_motor_init();
   AD5940_MCUResourceInit(0);
-  // setup_wifi();
-  // client.setServer(my_mqtt_server, port_id);
-  // client.setCallback(callback);
-  // xTaskCreatePinnedToCore(mqttLoopTask, "mqttLoopTask", 4096, NULL, 1, NULL, 1);
+  setup_wifi();
+  client.setServer(my_mqtt_server, port_id);
+  client.setCallback(callback);
+  xTaskCreatePinnedToCore(mqttLoopTask, "mqttLoopTask", 4096, NULL, 1, NULL, 1);
 }
 
 void loop() {
@@ -45,37 +45,21 @@ void loop() {
   // }
 
   // 1#-500?500/10|2$0!
-  S_Vol = -500;
-  E_Vol =  500;
-  StepNumber = 20;
-  RepeatTimes = 2;
-  logEn = bFALSE;
-  AD5940_CV_Main();
-  ESP.restart();
-  if (g_state == READ_CV){
+  if (g_state == CONTROL_VOL){
 
     VoltageCtrl_Main();
-    data_send["cmd"] = "data";
-    data_send["object"] = "cv";
-    JsonObject attribute = data_send.createNestedObject("attribute");
-    for (int i =0; i< 1024; i++){
-      attribute["index"] = i;
-      attribute["data"] = random(101);
-      String Jdata;
-      serializeJson(data_send, Jdata);
-      client.publish("Thinh", Jdata.c_str());
-      delay(10);
-    }
     g_state = IDLE;
-    Serial.printf("Sended !\n");
+    Serial.printf("Sended VOL!\n");
   }
   else if (g_state == READ_CV){
     AD5940_CV_Main(); 
     g_state = IDLE;
+    Serial.printf("Sended CV!\n");
   }
   else if (g_state == READ_EIS){
     AD5940_EIS_Main(); 
     g_state = IDLE;
+    Serial.printf("Sended EIS!\n");
   }
 }
 

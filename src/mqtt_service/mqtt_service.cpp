@@ -1,5 +1,6 @@
 
 #include <mqtt_service/mqtt_service.h>
+#include <app/dc_app/dc_motor_app.h>
 
 const char* ssid_wifi = "thinh";
 const char* pass_wifi = "12345678";
@@ -29,7 +30,7 @@ void reconnect(void){
         clientId += String(random(0xffff), HEX);
         if (client.connect(clientId.c_str(), ssid_server, pass_server)){
             Serial.println("connected");
-            client.subscribe("state");
+            client.subscribe("mems_esp");
             client.publish("esp32/status", "Connect Success");
             delay(1000);
         }
@@ -50,7 +51,7 @@ void callback(char* topic, byte * message, unsigned int length) {
     messageTemp += (char)message[i];
   }
   Serial.println();
-  StaticJsonDocument<200> doc; // Kích thước tùy chọn
+  StaticJsonDocument<1024> doc; // Kích thước tùy chọn
   DeserializationError error = deserializeJson(doc, messageTemp);
   if (!error) {
   String cmd = doc["cmd"];
@@ -58,8 +59,8 @@ void callback(char* topic, byte * message, unsigned int length) {
   if (cmd == "control")
   {
     if (object == "vol"){
-      int vol1 = doc["attribute"]["vol1"];
-      int vol2 = doc["attribute"]["vol2"];
+      targetVoltage1 = doc["attribute"]["vol1"];
+      targetVoltage2 = doc["attribute"]["vol2"];
       g_state = CONTROL_VOL;
     }
     else if (object == "cv"){

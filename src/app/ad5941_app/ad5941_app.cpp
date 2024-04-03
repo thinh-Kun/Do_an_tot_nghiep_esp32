@@ -31,7 +31,7 @@ static int32_t RampShowResult(float *pData, uint32_t DataCount)
     attribute["data"] = pData[i];
     String Jdata;
     serializeJson(data_send_temp, Jdata);
-    client.publish("Thinh", Jdata.c_str());
+    client.publish("mems_server", Jdata.c_str());
     delay(10);
     
     // printf("%d;%.6f\n",index++, pData[i]);
@@ -53,7 +53,8 @@ int32_t ImpedanceShowResult(uint32_t *pData, uint32_t DataCount)
   if (S_Vol == E_Vol)
   {
     timeNow = millis() - timeStart;    //@Thinh
-    printf("%lu;", timeNow);
+    // printf("%lu;", timeNow);
+    attribute["time"] = timeNow;
   }
   else
   {
@@ -75,7 +76,7 @@ int32_t ImpedanceShowResult(uint32_t *pData, uint32_t DataCount)
     attribute["phase"] = phase;
     String Jdata;
     serializeJson(data_send_temp, Jdata);
-    client.publish("Thinh", Jdata.c_str());
+    client.publish("mems_server", Jdata.c_str());
     delay(10);
   }
   return 0;

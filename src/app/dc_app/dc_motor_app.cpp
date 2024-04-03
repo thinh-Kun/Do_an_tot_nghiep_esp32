@@ -17,9 +17,9 @@
 
 #define WAIT_TIME 6000 /*ms*/
 #define HALFSTEP 8
-float targetVoltage1; //gia tri Voltage tra ve cho stepper1
+float targetVoltage1 = 0; //gia tri Voltage tra ve cho stepper1
 float curentVoltage1 = 0; //gia tri Voltage nhap vao cho stepper1
-float targetVoltage2; //gia tri Voltage tra ve cho stepper2
+float targetVoltage2 = 0; //gia tri Voltage tra ve cho stepper2
 float curentVoltage2 = 0;; //gia tri Voltage nhap vao cho stepper2
 // ULN2003 Motor Driver Pins
 #define motorPin1  13     // IN1 on the ULN2003 driver 1
@@ -146,7 +146,7 @@ void VoltageCtrl_Main(void) {
     attribute["vol2"] = curentVoltage2;
     String Jdata;
     serializeJson(data_send, Jdata);
-    client.publish("Thinh", Jdata.c_str());
+    client.publish("mems_server", Jdata.c_str());
     delay(10);
     // Serial.println("0;" + String(attempCount) + ";" + String(MAX_ATTEMP) + ";"  + String(isSuccess) + ";" + String(curentVoltage1) + ";" + String(curentVoltage2));
   }

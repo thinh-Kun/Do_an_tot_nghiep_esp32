@@ -1,4 +1,5 @@
 #include "app/ad5941_app/ad5941_app.h"
+#include "mqtt_service/mqtt_service.h"
 #include <Arduino.h>
 
 #define AppCVBuff_CV_SIZE 1024
@@ -18,11 +19,22 @@ unsigned long timeNow = 0;
 
 static int32_t RampShowResult(float *pData, uint32_t DataCount)
 {
-  static uint32_t index;
+  static uint32_t index = 0;
   /* Print data*/
+  DynamicJsonDocument data_send_temp(1024);
+  data_send_temp["cmd"] = "data";
+  data_send_temp["object"] = "cv";
   for(int i = 0; i < DataCount; i++)
   {
-    printf("%d;%.6f\n",index++, pData[i]);
+    JsonObject attribute = data_send_temp.createNestedObject("attribute");
+    attribute["index"] = index++;
+    attribute["data"] = pData[i];
+    String Jdata;
+    serializeJson(data_send_temp, Jdata);
+    client.publish("Thinh", Jdata.c_str());
+    delay(10);
+    
+    // printf("%d;%.6f\n",index++, pData[i]);
   }
   return 0;
 }
@@ -33,11 +45,15 @@ int32_t ImpedanceShowResult(uint32_t *pData, uint32_t DataCount)
 
   fImpPol_Type *pImp = (fImpPol_Type*)pData;
   AppIMPCtrl(IMPCTRL_GETFREQ, &freq);
+  DynamicJsonDocument data_send_temp(1024);
+  data_send_temp["cmd"] = "data";
+  data_send_temp["object"] = "eis";
+  JsonObject attribute = data_send_temp.createNestedObject("attribute");
 
   if (S_Vol == E_Vol)
   {
-    // timeNow = millis() - timeStart;    //@Thinh
-    // printf("%lu;", timeNow);
+    timeNow = millis() - timeStart;    //@Thinh
+    printf("%lu;", timeNow);
   }
   else
   {
@@ -47,11 +63,20 @@ int32_t ImpedanceShowResult(uint32_t *pData, uint32_t DataCount)
   float phase;
   for(int i=0;i<DataCount;i++)
   {
+
+
     phase = pImp[i].Phase*180/MATH_PI;
     if(phase > 180) phase = phase - 360;
     else if (phase < -180) phase = phase + 360;
     //printf("%f;%f\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
-    printf("%f;%f\n", pImp[i].Magnitude, phase);
+    // printf("%f;%f\n", pImp[i].Magnitude, phase); @Thinh
+
+    attribute["magnitude"] = pImp[i].Magnitude;
+    attribute["phase"] = phase;
+    String Jdata;
+    serializeJson(data_send_temp, Jdata);
+    client.publish("Thinh", Jdata.c_str());
+    delay(10);
   }
   return 0;
 }

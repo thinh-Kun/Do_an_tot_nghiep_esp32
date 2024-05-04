@@ -42,6 +42,7 @@ AccelStepper stepper1(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
 AccelStepper stepper2(HALFSTEP, motorPin5, motorPin7, motorPin6, motorPin8);
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED; 
 #define HAVE_VOLTAGE_CONTROL 1
+#define DEBUG 1
 #ifdef HAVE_VOLTAGE_CONTROL 
 void readVoltage(void){
 

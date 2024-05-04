@@ -28,7 +28,8 @@ void reconnect(void){
         Serial.print("Attempting MQTT connection...");
         String clientId = "ESP32Client-";
         clientId += String(random(0xffff), HEX);
-        if (client.connect(clientId.c_str(), ssid_server, pass_server)){
+        // if (client.connect(clientId.c_str(), ssid_server, pass_server)){
+                  if (client.connect(clientId.c_str())){
             Serial.println("connected");
             client.subscribe("mems_esp");
             client.publish("esp32/status", "Connect Success");
@@ -87,19 +88,8 @@ void callback(char* topic, byte * message, unsigned int length) {
 
   if (messageTemp == "check")  //COMMAND OF SERVER
   {
-    client.publish("Thinh", "OK");
+    client.publish("mems_server", "OK");
     delay(100);
   }
-    if (messageTemp == "vol")  //COMMAND OF SERVER
-  {
-    client.publish("Thinh", "VOL");
-    delay(100);
-  }
-      if (messageTemp == "READ_CV")  //COMMAND OF SERVER
-  {
-    g_state = READ_CV;
-    delay(100);
-  }
-
 
 }

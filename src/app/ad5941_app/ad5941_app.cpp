@@ -24,9 +24,9 @@ static int32_t RampShowResult(float *pData, uint32_t DataCount)
   DynamicJsonDocument data_send_temp(1024);
   data_send_temp["cmd"] = "data";
   data_send_temp["object"] = "cv";
+  JsonObject attribute = data_send_temp.createNestedObject("attribute");
   for(int i = 0; i < DataCount; i++)
   {
-    JsonObject attribute = data_send_temp.createNestedObject("attribute");
     attribute["index"] = index++;
     attribute["data"] = pData[i];
     String Jdata;
@@ -54,11 +54,15 @@ int32_t ImpedanceShowResult(uint32_t *pData, uint32_t DataCount)
   {
     timeNow = millis() - timeStart;    //@Thinh
     // printf("%lu;", timeNow);
-    attribute["time"] = timeNow;
+    attribute["freq"] = timeNow;
   }
   else
   {
-    printf("%.2f;", freq);
+    // printf("-%.2f-;", freq);
+    // char freq_str[20]; // Đảm bảo có đủ không gian để lưu chuỗi kết quả
+    // sprintf(freq_str, "%.2f", freq);
+    attribute["freq"] = freq;
+    
   }
   /*Process data*/
   float phase;
@@ -70,7 +74,7 @@ int32_t ImpedanceShowResult(uint32_t *pData, uint32_t DataCount)
     if(phase > 180) phase = phase - 360;
     else if (phase < -180) phase = phase + 360;
     //printf("%f;%f\n", pImp[i].Magnitude, pImp[i].Phase*180/MATH_PI);
-    // printf("%f;%f\n", pImp[i].Magnitude, phase); @Thinh
+    // printf("%f;%f\n", pImp[i].Magnitude, phase);// @Thinh
 
     attribute["magnitude"] = pImp[i].Magnitude;
     attribute["phase"] = phase;
